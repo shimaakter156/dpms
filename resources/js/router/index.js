@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Login from '../views/auth/Login.vue';
 import Main from '../components/layouts/Main';
 import Dashboard from '../views/dashboard/Index.vue';
+import NewPrescription from '../views/prescription/Index';
 import Users from '../views/users/Index';
 import SRInfo from '../views/setup/srList.vue';
 import LocationList from '../views/setup/locationList.vue';
@@ -54,6 +55,23 @@ const routes = [
                 name: 'Dashboard',
                 component: Dashboard
             },
+            {
+                path: baseurl + 'prescriptions/new',
+                name: 'NewPrescription',
+                component: NewPrescription
+            },
+            // {
+            //     path: '/prescriptions/write',
+            //     name: 'PrescriptionWrite',
+            //     component: () => import('../pages/Prescription/WritePrescription.vue'),
+            //     meta: { requiresAuth: true }
+            // },
+            // {
+            //     path: '/prescriptions/write/:id',
+            //     name: 'PrescriptionEdit',
+            //     component: () => import('../pages/Prescription/WritePrescription.vue'),
+            //     meta: { requiresAuth: true }
+            // },
             {
                 path: baseurl + 'users',
                 name: 'Users',

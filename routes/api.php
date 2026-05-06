@@ -5,6 +5,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CommonController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\SRController;
+use App\Http\Controllers\Web\DoctorController;
+use App\Http\Controllers\Web\PatientController;
 use App\Http\Controllers\Web\ProductController;
 use App\Http\Controllers\Web\ReportController;
 use App\Http\Controllers\Web\SettingController;
@@ -32,8 +34,16 @@ Route::group(['middleware' => ['jwt:api']], function () {
     Route::get('decoded-result/{param}',[CommonController::class,'decode']);
 
 
+    Route::group(['prefix' => 'doctor'],function () {
+        Route::get('info', [DoctorController::class, 'doctorInfo']);
+    });
+    Route::group(['prefix' => 'patients'],function () {
+        Route::get('info/{patientCode}', [PatientController::class, 'patientInfoByID']);
+        Route::get('list/{doctorID}', [PatientController::class, 'list']);
+
+    });
     Route::group(['prefix' => 'user'],function () {
-        Route::post('add', [UserController::class, 'store']);
+        Route::get('info', [DoctorController::class, 'doctorInfo']);
         Route::post('update', [UserController::class, 'update']);
         Route::post('list', [UserController::class, 'index']);
 

@@ -3,7 +3,7 @@
     <div class="sidebar-inner">
       <!-- Logo Section -->
       <div class="sidebar-logo">
-        <img src="public/assets/images/hospital.png" alt="" class="logo-img"/>
+        <img :src="baseurl()+'public/assets/images/hospital.png'" alt="" class="logo-img"/>
 
 
         <div class="logo-text">
@@ -41,6 +41,7 @@
             >
               <i :class="['nav-icon mdi', 'mdi-' + (parent.icon || 'circle-outline')]"></i>
               <span class="nav-text">{{ parent.name }}</span>
+
             </router-link>
 
           </li>

@@ -22,6 +22,31 @@ class UserService
             ->first();
         return $user;
     }
+    public function userExistByUserID($userID){
+
+        $user = DB::table('tbl_User as U ')
+            ->join('tbl_UserRole as UR', function ($join){
+                $join->on('U.UserID','=','UR.UserID')->where('UR.IsActive','=',1);
+            })
+            ->join('tbl_Role as R',function ($join){
+                $join->on('R.RoleID','=','UR.RoleID')->where('R.IsActive','=',1);
+            })
+            ->where('U.IsActive', 1)
+            ->where('U.IsDeleted', 0)
+            ->where('U.UserID','=',$userID)
+            ->select(
+                'u.UserID',
+                'u.Username',
+                'u.FullName',
+                'u.Email',
+                'u.Phone',
+                'r.RoleName',
+                'r.RoleCode'
+            )
+            ->first();
+        return $user;
+    }
+
     public function userIndex(Request $request)
     {
         $take = $request->take;
@@ -63,7 +88,7 @@ class UserService
         return response()->json($users);
     }
 
-    public function userIndexQuery($search){
+      public function userIndexQuery($search){
         return User::join('UserType', 'UserType.UserTypeID', 'UserManager.UserTypeID')
             ->where(function ($q) use ($search) {
                 $q->where('Name', 'like', '%' . $search . '%');

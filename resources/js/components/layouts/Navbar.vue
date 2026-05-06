@@ -26,10 +26,10 @@
     <!-- Actions -->
     <div class="tb-actions">
       <router-link
-          v-if="showNewRx"
+          v-if="me.RoleCode==='DOCTOR'"
           :to="`${mainOrigin}prescriptions/new`"
-          class="btn-new-rx d-none d-md-inline-flex"
-      >
+          target="_blank"
+          class="btn-new-rx d-none d-md-inline-flex">
         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
           <path stroke-linecap="round" d="M12 5v14M5 12h14"/>
         </svg>
@@ -64,8 +64,26 @@ export default {
   props: {
     showNewRx: { type: Boolean, default: true }
   },
+  state: {
+    me: null
+  },
+  mutations: {
+    me(state, payload) {
+      state.me = payload
+    },
+
+  },
+  data(){
+    return{
+      user : ''
+    }
+  },
   computed: {
-    me() { return this.$store.state.me || {} },
+    me() {
+
+      return this.$store.state.me || {}
+    },
+
     initials() {
       return (this.me.Name || 'AD').split(' ').slice(0,2).map(w => w[0].toUpperCase()).join('')
     },
@@ -79,14 +97,19 @@ export default {
   created() { this.getData() },
   methods: {
     toggleSidebar() { $("body").toggleClass("enlarged") },
-    getData() {
-      this.axiosPost('me', {}, (response) => {
-        this.$store.commit('me', response)
-      }, (error) => { this.errorNoti(error) })
-    },
+    // getData() {
+    //   this.axiosPost('me', {}, (response) => {
+    //     this.$store.commit('me', response)
+    //   }, (error) => { this.errorNoti(error) })
+    // },
+      clearMe(state) {
+        state.me = null
+      },
     logout() {
       this.axiosPost("logout", {}, () => {
         localStorage.setItem("token", "")
+        localStorage.removeItem('user')
+        this.clearMe();
         this.$router.push(this.mainOrigin + "login")
       }, (error) => { this.errorNoti(error) })
     }

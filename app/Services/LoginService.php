@@ -12,9 +12,10 @@ class LoginService
 
     public function handleFailedLogin($user)
     {
+
         $user->FailedLoginCount += 1;
 
-        if ($user->FailedLoginCount >= $this->maxAttempts) {
+        if ($user->FailedLoginCount >= 5) {
             $user->IsLocked = 1;
             $user->LockoutUntil = now()->addMinutes($this->lockMinutes);
         }
@@ -45,7 +46,6 @@ class LoginService
         }
     }
     public function hashCheck($request,$user){
-
         return Hash::check($user->PasswordSalt.$request->password, $user->PasswordHash);
 
     }

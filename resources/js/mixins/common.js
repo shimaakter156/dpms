@@ -182,5 +182,11 @@ export const Common = {
                 return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             }
         },
+        getData() {
+            this.axiosPost('me', {}, (response) => {
+                this.$store.commit('me', response)
+            }, (error) => { this.errorNoti(error) })
+        },
+
     },
 }

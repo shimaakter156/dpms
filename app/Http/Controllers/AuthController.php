@@ -40,7 +40,6 @@ class AuthController extends Controller
         $this->loginService->lockCheck($user);
 
         $hashedCheck = $this->loginService->hashCheck($request, $user);
-
         if (!$hashedCheck){
             $this->loginService->handleFailedLogin($user);
             $this->loginService->logFailure($request, 'Invalid credentials');
@@ -146,8 +145,7 @@ class AuthController extends Controller
 
     public function me()
     {
-        return response()->json($this->guard()->user());
-
+       return response()->json( $this->userService->userExistByUserID(Auth::user()->UserID));
     }
 
     public function logout()
