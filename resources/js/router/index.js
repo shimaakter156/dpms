@@ -3,7 +3,7 @@ import VueRouter from 'vue-router'
 import Login from '../views/auth/Login.vue';
 import Main from '../components/layouts/Main';
 import Dashboard from '../views/dashboard/Index.vue';
-import NewPrescription from '../views/prescription/Index';
+import NewPrescription from '../views/prescription/WritePrescription.vue';
 import Users from '../views/users/Index';
 import SRInfo from '../views/setup/srList.vue';
 import LocationList from '../views/setup/locationList.vue';

@@ -6,7 +6,10 @@ use App\Http\Controllers\CommonController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\SRController;
 use App\Http\Controllers\Web\DoctorController;
+use App\Http\Controllers\Web\LookupController;
+use App\Http\Controllers\Web\MedicineController;
 use App\Http\Controllers\Web\PatientController;
+use App\Http\Controllers\Web\PrescriptionController;
 use App\Http\Controllers\Web\ProductController;
 use App\Http\Controllers\Web\ReportController;
 use App\Http\Controllers\Web\SettingController;
@@ -52,59 +55,24 @@ Route::group(['middleware' => ['jwt:api']], function () {
         Route::post('reset-password',[UserController::class,'updatePassword']);
         Route::post('password-change',[UserController::class,'passwordChange']);
     });
+    Route::get ('lookup/all',           [LookupController::class, 'all']);
+    Route::get ('lookup/{type}',        [LookupController::class, 'search']);
+    Route::post('lookup/{type}',        [LookupController::class, 'quickAdd']);
 
-    Route::group(['prefix' => 'report'],function () {
-        Route::get('market-rate', [ReportController::class, 'marketRateReport']);
-        Route::get('market-rate-pivot', [ReportController::class, 'marketRatePivotReport']);
+    // Patients
+    Route::get ('patients/search',          [PatientController::class, 'search']);
+    Route::get ('patients/list/{doctorId}', [PatientController::class, 'listForDoctor']);
+    Route::get ('patients/{id}',            [PatientController::class, 'show']);
 
-    });
+    // Medicines
+    Route::get ('medicines/search', [MedicineController::class, 'search']);
 
-    Route::group(['prefix'=>'product'],function (){
-        Route::post('list',[ProductController::class,'index']);
-        Route::post('market-price-list',[ProductController::class,'marketPriceIndex']);
-        Route::post('wholesale-market-price-list',[ProductController::class,'wholesaleMarketPriceIndex']);
-
-    });
-
-    Route::group(['prefix'=>'setup'],function (){
-       Route::post('sr-info',[SRController::class,'Index']);
-       Route::post('location-list',[LocationController::class,'Index']);
-       Route::get('get-location-info/{locationCode}',[LocationController::class,'getLocationInfo']);
-       Route::post('store-location',[LocationController::class,'store']);
-
-       Route::get('get-product-info/{prodCode}',[ProductController::class,'getProductInfo']);
-        Route::post('store-product',[ProductController::class,'store']);
-    });
-
-//    Route::get('/send-test-email', function () {
-//        $toEmail = 'rabiul@aci-bd.com';
-//
-//        try {
-//            Mail::to($toEmail)->send(new ApprovedEmail('AMS advance approval request.', [
-//                'title' => 'Advance Approval Request',
-//                'msg' => 'A new request is waiting for your approval.',
-//                'link' => 'my-approvals',
-//                'linkName' => 'My Approvals',
-//                'linkShow' => true
-//            ]));
-//
-//            Log::info('Test email sent successfully to: ' . $toEmail);
-//            return 'Test email sent successfully!';
-//        } catch (\Exception $e) {
-//            Log::error('Failed to send test email to: ' . $toEmail, [
-//                'error' => $e->getMessage(),
-//                'trace' => $e->getTraceAsString()
-//            ]);
-//
-//            return response()->json([
-//                'status' => 'error',
-//                'message' => 'Failed to send email',
-//                'error' => $e->getMessage()
-//            ], 500);
-//        }
-//    });
+    // Prescriptions
+    Route::get ('prescriptions/last-by-patient/{patientId}', [PrescriptionController::class, 'lastByPatient']);
+    Route::get ('prescriptions/{id}',                        [PrescriptionController::class, 'show']);
+    Route::post('prescriptions',                             [PrescriptionController::class, 'save']);
+    Route::post('prescriptions/{id}',                        [PrescriptionController::class, 'save']);
 
 
 });
 
-//Route::get('test-mail/{email}',[ReportController::class,'sendPHPMailerEmail']);
