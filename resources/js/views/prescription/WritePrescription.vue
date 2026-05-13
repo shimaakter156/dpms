@@ -100,6 +100,8 @@
                     :clear-on-select="false"
                     :preserve-search="true"
                     :hide-selected="true"
+                    track-by="ComplaintID"
+                    label="ComplaintName"
                     tag-placeholder="Press Enter to add"
                     placeholder="Type or pick complaints…"
                     @tag="(tag) => addTag('complaints', tag)"
@@ -107,7 +109,7 @@
                 />
                 <!-- Print-only bulleted list -->
                 <ul class="print-only print-bullets">
-                  <li v-for="(v, i) in selected.complaints" :key="'p-c'+i">{{ v }}</li>
+                  <li v-for="(v, i) in selected.complaints" :key="'p-c'+i">{{ labelOf(v) }}</li>
                 </ul>
               </div>
             </div>
@@ -119,6 +121,8 @@
                 <multiselect
                     v-model="selected.history"
                     :options="suggestions.history"
+                    track-by="HistoryID"
+                    label="ConditionName"
                     :multiple="true" :taggable="true"
                     :close-on-select="false" :clear-on-select="false"
                     :preserve-search="true" :hide-selected="true"
@@ -127,7 +131,7 @@
                     @tag="(tag) => addTag('history', tag)"
                 />
                 <ul class="print-only print-bullets">
-                  <li v-for="(v, i) in selected.history" :key="'p-h'+i">{{ v }}</li>
+                  <li v-for="(v, i) in selected.history" :key="'p-h'+i">{{ labelOf(v) }}</li>
                 </ul>
               </div>
             </div>
@@ -156,7 +160,7 @@
                       @tag="(tag) => addTag('examFindings', tag)"
                   />
                   <ul class="print-only print-bullets">
-                    <li v-for="(v, i) in selected.examFindings" :key="'p-e'+i">{{ v }}</li>
+                    <li v-for="(v, i) in selected.examFindings" :key="'p-e'+i">{{ labelOf(v) }}</li>
                   </ul>
                 </div>
               </div>
@@ -170,6 +174,8 @@
                     v-model="selected.diagnosis"
                     :options="suggestions.diagnosis"
                     :multiple="true" :taggable="true"
+                    track-by="DiagnosisID"
+                    label="DiagnosisName"
                     :close-on-select="false" :clear-on-select="false"
                     :preserve-search="true" :hide-selected="true"
                     tag-placeholder="Press Enter to add"
@@ -178,7 +184,7 @@
                     @search-change="(q) => onSearch('diagnosis', q)"
                 />
                 <ul class="print-only print-bullets">
-                  <li v-for="(v, i) in selected.diagnosis" :key="'p-d'+i">{{ v }}</li>
+                  <li v-for="(v, i) in selected.diagnosis" :key="'p-d'+i">{{ labelOf(v) }}</li>
                 </ul>
               </div>
             </div>
@@ -191,6 +197,8 @@
                     v-model="selected.investigations"
                     :options="suggestions.investigations"
                     :multiple="true" :taggable="true"
+                    track-by="InvestigationSetupID"
+                    label="InvestigationName"
                     :close-on-select="false" :clear-on-select="false"
                     :preserve-search="true" :hide-selected="true"
                     tag-placeholder="Press Enter to add"
@@ -199,7 +207,7 @@
                     @search-change="(q) => onSearch('investigations', q)"
                 />
                 <ul class="print-only print-bullets">
-                  <li v-for="(v, i) in selected.investigations" :key="'p-i'+i">{{ v }}</li>
+                  <li v-for="(v, i) in selected.investigations" :key="'p-i'+i">{{ labelOf(v) }}</li>
                 </ul>
               </div>
             </div>
@@ -223,7 +231,7 @@
                   <thead>
                   <tr>
                     <th style="width:22px"></th>
-                    <th style="width:32%">MEDICINE NAME &amp; STRENGTH</th>
+                    <th style="width:32%">MEDICINE NAME &amp; STRENGTH </th>
                     <th style="width:15%">DOSAGE</th>
                     <th style="width:13%">DURATION</th>
                     <th>INSTRUCTIONS</th>
@@ -231,9 +239,7 @@
                   </tr>
                   </thead>
                   <tbody>
-                  <tr v-for="(med, i) in form.medicines"
-                      :key="'med-'+i"
-                      >
+                  <tr v-for="(med, i) in form.medicines" :key="'med-'+i">
 
                     <td class="rn">{{ i + 1 }}.</td>
 
@@ -251,13 +257,17 @@
                           :clear-on-select="false"
                           :show-labels="false"
                           track-by="MedicineID"
-                          label="label"
+                          label="MedicineName"
                           tag-placeholder="Press Enter to add"
                           placeholder="Search or create medicine..."
                           @tag="(tag) => onMedicineTag(i, tag)"
                           @search-change="(q) => onMedicineSearch(q)"
                           @select="(item) => onMedicineSelect(i, item)"
                       />
+                      <span class="print-only print-cell print-cell--med">
+                          {{ med.selectedMedicine?.MedicineName || med.name || '' }}
+                      </span>
+
                     </td>
 
                     <!-- DOSAGE -->
@@ -265,14 +275,15 @@
                       <multiselect
                           v-model="form.medicines[i].dosage"
                           :options="form.medicines[i].dosageOptions && form.medicines[i].dosageOptions.length
-            ? form.medicines[i].dosageOptions
-            : suggestions.dosagePatterns"
+                            ? form.medicines[i].dosageOptions
+                            : suggestions.dosagePatterns"
                           :multiple="false"
                           :taggable="true"
                           :show-labels="false"
                           placeholder="Dosage"
                           @tag="val => { form.medicines[i].dosage = val }"
                       />
+                      <span class="print-only print-cell print-cell--dos">{{ labelOf(med.dosage) }}</span>
                     </td>
 
                     <!-- DURATION -->
@@ -286,6 +297,7 @@
                           placeholder="Duration"
                           @tag="val => { form.medicines[i].duration = val }"
                       />
+                      <span class="print-only print-cell">{{ labelOf(med.duration) }}</span>
                     </td>
 
                     <!-- INSTRUCTION -->
@@ -299,6 +311,7 @@
                           placeholder="Instructions"
                           @tag="val => { form.medicines[i].instructions = val }"
                       />
+                      <span class="print-only print-cell">{{ labelOf(med.instructions) }}</span>
                     </td>
 
                     <!-- REMOVE -->
@@ -307,7 +320,7 @@
                     </td>
 
                   </tr>
-                  <tr v-if="!form.medicines.length">
+                  <tr v-if="!form.medicines.length" class="no-print">
                     <td colspan="6" class="empty-row">
                       No medicines added. Click <strong>＋ Add</strong> to start.
                     </td>
@@ -328,6 +341,8 @@
                     v-model="selected.advice"
                     :options="suggestions.advice"
                     :multiple="true" :taggable="true"
+                    track-by="AdviceTemplateID"
+                    label="AdviceText"
                     :close-on-select="false" :clear-on-select="false"
                     :preserve-search="true" :hide-selected="true"
                     tag-placeholder="Press Enter to add"
@@ -336,7 +351,7 @@
                     @search-change="(q) => onSearch('advice', q)"
                 />
                 <ul class="print-only print-bullets">
-                  <li v-for="(v, i) in selected.advice" :key="'p-a'+i">{{ v }}</li>
+                  <li v-for="(v, i) in selected.advice" :key="'p-a'+i">{{ labelOf(v) }}</li>
                 </ul>
               </div>
             </div>
@@ -356,7 +371,7 @@
                     @tag="(tag) => addTag('referral', tag)"
                 />
                 <ul class="print-only print-bullets">
-                  <li v-for="(v, i) in selected.referral" :key="'p-r'+i">{{ v }}</li>
+                  <li v-for="(v, i) in selected.referral" :key="'p-r'+i">{{ labelOf(v) }}</li>
                 </ul>
               </div>
             </div>
@@ -561,7 +576,203 @@ export default {
   },
 
   methods: {
+    // patients details
+    onPatientChange() {
+      const p = this.selectedPatient
+      if (!p || !p.PatientID) return
+      //
+      // const histSet = new Set(this.selected.history)
+      // this.patientChronic.forEach(c => histSet.add(c))
+      //
+      // this.patientAllergies.forEach(a => histSet.add('Allergic to ' + a))
+      //
+      // this.selected.history = Array.from(histSet)
+      //
+      // this.selected.history.forEach(h => {
+      //   if (!this.suggestions.history.includes(h)) this.suggestions.history.push(h)
+      // })
 
+      this.axiosGet(`patients/${p.PatientID}`, (res) => {
+        const full = res.data || res
+        const idx = this.patientsList.findIndex(x => Number(x.PatientID) === Number(p.PatientID))
+        if (idx !== -1) this.patientsList.splice(idx, 1, { ...this.patientsList[idx], ...full })
+      }, () => {})
+
+      this.fetchLastRx(p.PatientID)
+    },
+    fetchLastRx(patientID) {
+      this.hasPriorRx = false
+      this.lastRx = null
+      this.axiosGet(`prescriptions/last-by-patient/${patientID}`, ({ data }) => {
+            const rx = data || {}
+            const hasData =
+                rx.diagnosis ||
+                rx.medicines?.length
+            if (!hasData) return
+            this.hasPriorRx = true
+            this.lastRx = rx
+            this.prescriptionID = rx.prescriptionID
+          }
+
+      )
+    },
+    loadFromLastVisit() {
+      this.loadPrescription(this.prescriptionID)
+      if (!this.lastRx) return
+
+      const rx = this.lastRx
+
+      const mapField = {
+        complaints: {
+          label: 'ComplaintName',
+          id: 'ComplaintID',
+        },
+        diagnosis: {
+          label: 'DiagnosisName',
+          id: 'DiagnosisID',
+        },
+        investigations: {
+          label: 'InvestigationName',
+          id: 'InvestigationSetupID',
+        },
+        advice: {
+          label: 'AdviceText',
+          id: 'AdviceTemplateID',
+        },
+      }
+
+      const fillArr = (key, raw) => {
+        if (!raw) {
+          this.selected[key] = []
+          return
+        }
+
+        const config = {
+          complaints: {
+            label: 'ComplaintName',
+            id: 'ComplaintID'
+          },
+          diagnosis: {
+            label: 'DiagnosisName',
+            id: 'DiagnosisID'
+          },
+          investigations: {
+            label: 'InvestigationName',
+            id: 'InvestigationSetupID'
+          },
+          advice: {
+            label: 'AdviceText',
+            id: 'AdviceTemplateID'
+          }
+        }[key]
+
+        let arr = []
+
+        if (Array.isArray(raw)) {
+          arr = raw.map((item, idx) => {
+
+            // already object from DB
+            if (typeof item === 'object') {
+
+              return {
+                ...item,
+
+                // ensure label exists
+                [config.label]:
+                item[config.label] ||
+                item.label ||
+                item.name ||
+                '',
+
+                // ensure ID exists
+                [config.id]:
+                item[config.id] ||
+                item.id ||
+                `tmp_${idx}_${Date.now()}`
+              }
+            }
+
+            // plain string
+            return {
+              [config.label]: item,
+              [config.id]: `tmp_${idx}_${Date.now()}`
+            }
+          })
+        }
+
+        // string separated by newline
+        else if (typeof raw === 'string') {
+          arr = raw
+              .split('\n')
+              .map((s, idx) => ({
+                [config.label]: s.trim(),
+                [config.id]: `tmp_${idx}_${Date.now()}`
+              }))
+              .filter(v => v[config.label])
+        }
+
+        this.selected[key] = arr
+
+        // merge into options
+        arr.forEach(item => {
+
+          const exists = this.suggestions[key].some(opt => {
+
+            if (typeof opt === 'object') {
+              return (
+                  opt[config.id] === item[config.id] ||
+                  opt[config.label] === item[config.label]
+              )
+            }
+
+            return opt === item[config.label]
+          })
+
+          if (!exists) {
+            this.suggestions[key].push(item)
+          }
+        })
+      }
+
+      fillArr('complaints', rx.complaints)
+      fillArr('diagnosis', rx.diagnosis)
+      fillArr('investigations', rx.investigations)
+      fillArr('advice', rx.advice)
+
+      // medicines
+      if (
+          rx.medicines &&
+          rx.medicines.length &&
+          this.form.medicines.every(m => !m.name?.trim())
+      ) {
+        this.form.medicines = rx.medicines.map(m => ({
+          ...EMPTY_MED(),
+
+          selectedMedicine: {
+            MedicineID: m.medicineID || `custom_${Date.now()}`,
+            MedicineName: m.name || m.MedicineName || '',
+          },
+
+          medicineID: m.medicineID || null,
+          name: m.name || m.MedicineName || '',
+          dosage: m.dosage || '',
+          duration: m.duration || '',
+          instructions: m.instructions || '',
+          dosageOptions: this.suggestions.dosagePatterns || [],
+        }))
+      }
+
+      this.successNoti &&
+      this.successNoti('Loaded from last visit.')
+    },
+
+    labelOf(v) {
+      if (!v) return ''
+      if (typeof v === 'string') return v
+      return v.ComplaintName || v.DiagnosisName || v.InvestigationName
+          || v.AdviceText    || v.ConditionName  || v.HistoryName
+          || v.label || v.name || v.MedicineName || ''
+    },
     onSearch(field, q) {
       const types = {
         complaints:     'complaints',
@@ -587,6 +798,7 @@ export default {
     },
 
     onMedicineSearch(q) {
+
       if (!q || q.length < 2) {
         // Show all preloaded options when query is cleared
         return
@@ -599,7 +811,7 @@ export default {
           const incoming = data.map((item, idx) => ({
             ...item,
             MedicineID: item.MedicineID || item.id || item.medicine_id || `s_${idx}`,
-            label: item.label || item.name || item.MedicineName || '',
+            MedicineName: item.MedicineName || item.label || item.name || '',
           }))
           // Replace options with search results + keep already-selected ones
           const selected = this.form.medicines
@@ -620,7 +832,14 @@ export default {
     onMedicineTag(index, tag) {
       const t = String(tag || '').trim()
       if (!t) return
-      const customMed = { MedicineID: `custom_${Date.now()}`, label: t }
+
+      const customMed = {
+        MedicineID: `custom_${Date.now()}`,
+        MedicineName: t
+      }
+
+      // add into options also
+      this.medicineOptions.push(customMed)
 
       this.$set(this.form.medicines, index, {
         ...this.form.medicines[index],
@@ -630,24 +849,26 @@ export default {
         dosageOptions: [...this.suggestions.dosagePatterns],
       })
 
-      // Auto-add new row if last
+      // auto add row
       if (index === this.form.medicines.length - 1) {
-        this.$nextTick(() => this.form.medicines.push(EMPTY_MED()))
+        this.$nextTick(() => {
+          this.form.medicines.push(EMPTY_MED())
+        })
       }
     },
 
     onMedicineSelect(index, item) {
+      console.log('item',item);
       if (!item) return
       const med = this.form.medicines[index]
 
       // Assign medicine details
       med.medicineID    = item.MedicineID
-      med.name          = item.label
+      med.name          = item.MedicineName
       med.dosageOptions = item.dosageOptions?.length
           ? item.dosageOptions
           : this.suggestions.dosagePatterns
 
-      // Auto-fill only if empty
       if (!med.dosage)       med.dosage       = item.DefaultDosage       || ''
       if (!med.duration)     med.duration     = item.DefaultDuration     || ''
       if (!med.instructions) med.instructions = item.DefaultInstructions || ''
@@ -705,7 +926,7 @@ export default {
         const incoming = data.map(item => ({
           ...item,
           MedicineID: item.MedicineID || item.id,
-          label: item.label || item.name || item.MedicineName || '',
+          MedicineName: item.MedicineName || item.label || item.name || '',
         }))
         incoming.forEach(inc => {
           const exists = this.medicineOptions.some(o => o.MedicineID === inc.MedicineID)
@@ -735,109 +956,91 @@ export default {
       this.axiosGet('lookup/all', (res) => {
         const data = res || {}
 
-        this.suggestions.complaints          = data.complaints          || []
-        this.suggestions.diagnosis           = data.diagnosis           || []
-        this.suggestions.investigations      = data.investigations      || []
-        this.suggestions.advice              = data.advice              || []
+        this.suggestions.complaints = (data.complaints || []).map(i => ({
+          ComplaintID: i.ComplaintID,
+          ComplaintName: i.ComplaintName
+        }))
+
+        this.suggestions.diagnosis = (data.diagnosis || []).map(i => ({
+          DiagnosisID: i.DiagnosisID,
+          DiagnosisName: i.DiagnosisName
+        }))
+
+        this.suggestions.investigations = (data.investigations || []).map(i => ({
+          InvestigationSetupID: i.InvestigationSetupID,
+          InvestigationName: i.InvestigationName
+        }))
+
+        this.suggestions.advice = (data.advice || []).map(i => ({
+          AdviceTemplateID: i.AdviceTemplateID,
+          AdviceText: i.AdviceText
+        }))
         this.suggestions.history             = data.history             || []
         this.suggestions.dosagePatterns      = data.dosage              || []
         this.suggestions.durationPatterns    = data.duration            || []
         this.suggestions.instructionPatterns = data.instruction         || []
-
-        // ✅ Normalize medicine options — handle both string[] and object[]
-        const rawMeds = data.medicine || []
-        this.medicineOptions = rawMeds.map((m, idx) => {
-          if (typeof m === 'string') {
-            return { MedicineID: `str_${idx}`, label: m }
-          }
-          return {
-            ...m,
-            MedicineID: m.MedicineID || m.id || m.medicine_id || idx,
-            label: m.label || m.name || m.MedicineName || m.medicine_name || '',
-          }
-        })
-      })
+        let medicineList                = data.medicine || []
+        this.medicineOptions = medicineList.map(item => ({
+          'MedicineName': `${item.BrandName} (${item.Strength}) `,
+          'MedicineID': item.MedicineID
+        }));
+      });
     },
     loadPrescription(id) {
       this.axiosGet(`prescriptions/${id}`, (res) => {
         const rx = res.data || res
-        this.form = {
-          ...this.form,
-          ...rx,
-          vitals:    rx.vitals || this.form.vitals,
-          medicines: rx.medicines && rx.medicines.length
-              ? rx.medicines.map(m => ({ ...EMPTY_MED(), ...m }))
-              : [EMPTY_MED()],
+
+        this.form.patientID  = rx.patientID  || rx.PatientID  || ''
+        this.form.date       = rx.date       || rx.VisitDate  || new Date().toISOString().slice(0, 10)
+        this.form.nextVisit  = rx.nextVisit  || rx.NextVisitDate || ''
+        this.form.vitals     = {
+          bp:     rx.vitals?.bp     || (rx.BPSystolic ? `${rx.BPSystolic}/${rx.BPDiastolic}` : ''),
+          pulse:  rx.vitals?.pulse  || rx.PulseRate   || '',
+          temp:   rx.vitals?.temp   || rx.Temperature || '',
+          weight: rx.vitals?.weight || rx.Weight      || '',
+          spo2:   rx.vitals?.spo2   || rx.SpO2        || '',
+          rbs:    rx.vitals?.rbs    || rx.RBS         || '',
         }
-        // Re-hydrate multi-selects: backend stores newline-separated strings.
-        MS_FIELDS.forEach(f => {
-          const raw = rx[f]
-          if (typeof raw === 'string') {
-            this.selected[f] = raw.split('\n').map(s => s.trim()).filter(Boolean)
-          } else if (Array.isArray(raw)) {
-            this.selected[f] = raw.slice()
-          }
-        })
+
+        // Re-hydrate medicines — map saved rows back to selectedMedicine shape
+        this.form.medicines = (rx.medicines && rx.medicines.length)
+            ? rx.medicines.map(m => ({
+              ...EMPTY_MED(),
+              selectedMedicine: m.medicineID
+                  ? { MedicineID: m.medicineID, MedicineName: m.name }
+                  : { MedicineID: `custom_${Date.now()}`, MedicineName: m.name },
+              medicineID:   m.medicineID   || null,
+              name:         m.name         || m.MedicineName || '',
+              dosage:       m.dosage       || m.Dosage       || '',
+              duration:     m.duration     || m.Duration     || '',
+              instructions: m.instructions || m.Instructions || '',
+              dosageOptions: [],
+            }))
+            : [EMPTY_MED()]
+
+        // Re-hydrate multiselects — backend returns arrays of objects or plain strings
+        const toStrings = (raw) => {
+          if (!raw) return []
+          if (typeof raw === 'string') return raw.split('\n').map(s => s.trim()).filter(Boolean)
+          if (Array.isArray(raw)) return raw.map(v =>
+              typeof v === 'string' ? v :
+                  (v.ComplaintName || v.DiagnosisName || v.InvestigationName
+                      || v.AdviceText || v.label || v.name || '')
+          ).filter(Boolean)
+          return []
+        }
+
+        this.selected.complaints     = toStrings(rx.complaints)
+        this.selected.diagnosis      = toStrings(rx.diagnosis)
+        this.selected.investigations = toStrings(rx.investigations)
+        this.selected.advice         = toStrings(rx.advice)
+        this.selected.history        = toStrings(rx.history || rx.HistoryOfIllness)
+        this.selected.examFindings   = toStrings(rx.examFindings || rx.ExaminationNotes)
+        this.selected.referral       = toStrings(rx.referral || rx.ReferralNotes)
       }, err => this.errorNoti(err))
     },
 
-    onPatientChange() {
-      const p = this.selectedPatient
-      if (!p || !p.PatientID) return
 
-      // Merge chronic conditions & allergies into history (avoid duplicates)
-      const histSet = new Set(this.selected.history)
-      this.patientChronic.forEach(c => histSet.add(c))
-      this.patientAllergies.forEach(a => histSet.add('Allergic to ' + a))
-      this.selected.history = Array.from(histSet)
-      // Make sure they're also in suggestions
-      this.selected.history.forEach(h => {
-        if (!this.suggestions.history.includes(h)) this.suggestions.history.push(h)
-      })
-
-      this.axiosGet(`patients/${p.PatientID}`, (res) => {
-        const full = res.data || res
-        const idx = this.patientsList.findIndex(x => Number(x.PatientID) === Number(p.PatientID))
-        if (idx !== -1) this.patientsList.splice(idx, 1, { ...this.patientsList[idx], ...full })
-      }, () => {})
-
-      this.fetchLastRx(p.PatientID)
-    },
-    fetchLastRx(patientID) {
-      this.hasPriorRx = false
-      this.lastRx = null
-      this.axiosGet(`prescriptions/last-by-patient/${patientID}`, ({ data }) => {
-            const rx = data || {}
-            const hasData =
-                rx.diagnosis ||
-                rx.medicines?.length
-            if (!hasData) return
-            this.hasPriorRx = true
-            this.lastRx = rx
-          }
-
-      )
-    },
-    loadFromLastVisit() {
-      if (!this.lastRx) return
-      const rx = this.lastRx
-      const fillArr = (k, raw) => {
-        if (this.selected[k] && this.selected[k].length) return // don't overwrite
-        if (typeof raw === 'string') {
-          this.selected[k] = raw.split('\n').map(s => s.trim()).filter(Boolean)
-        } else if (Array.isArray(raw)) {
-          this.selected[k] = raw.slice()
-        }
-      }
-      fillArr('complaints',     rx.complaints)
-      fillArr('diagnosis',      rx.diagnosis)
-      fillArr('investigations', rx.investigations)
-      fillArr('advice',         rx.advice)
-      if (rx.medicines && rx.medicines.length && this.form.medicines.every(m => !m.name.trim())) {
-        this.form.medicines = rx.medicines.map(m => ({ ...EMPTY_MED(), ...m }))
-      }
-      this.successNoti && this.successNoti('Loaded from last visit.')
-    },
 
     /* ---------- Medicines --------------------------------- */
     addMedicine()       { this.form.medicines.push(EMPTY_MED()) },
@@ -853,32 +1056,87 @@ export default {
       if (!this.form.patientID) return this.errorNoti('Please select a patient.')
       this.saving = true
 
-      const flat = {}
-      MS_FIELDS.forEach(f => { flat[f] = (this.selected[f] || []).join('\n') })
+      // ── Helper: extract plain string label from a value that may be
+      //            an object {ComplaintName/DiagnosisName/...} or a plain string
+      const toLabel = (v) => {
+        if (!v) return ''
+        if (typeof v === 'string') return v.trim()
+        // Object from multiselect with track-by/label
+        return (v.ComplaintName || v.DiagnosisName || v.InvestigationName
+            || v.AdviceText    || v.ConditionName || v.label || v.name || '').trim()
+      }
 
-      // Only include rows that have a medicine name
+      // ── Arrays for fields that backend expects as arrays ──────────────
+      const complaintsArr    = (this.selected.complaints     || []).map(toLabel).filter(Boolean)
+      const diagnosisArr     = (this.selected.diagnosis      || []).map(toLabel).filter(Boolean)
+      const investigationsArr= (this.selected.investigations || []).map(toLabel).filter(Boolean)
+      const adviceArr        = (this.selected.advice         || []).map(toLabel).filter(Boolean)
+
+      // ── Strings for fields backend expects as nullable string ─────────
+      const historyStr       = (this.selected.history      || []).map(toLabel).filter(Boolean).join('\n')
+      const examFindingsStr  = (this.selected.examFindings || []).map(toLabel).filter(Boolean).join('\n')
+      const referralStr      = (this.selected.referral     || []).map(toLabel).filter(Boolean).join('\n')
+
+      // ── Medicines — only filled rows ──────────────────────────────────
       const filledMedicines = this.form.medicines
           .filter(m => {
-            const name = m.selectedMedicine?.label || m.name || ''
+            // Accept both object-selected and manually typed name
+            const name = m.selectedMedicine?.MedicineName
+                || m.selectedMedicine?.label
+                || m.name || ''
             return name.trim().length > 0
           })
-          .map(m => ({
-            medicineID:   m.selectedMedicine?.MedicineID || m.medicineID || null,
-            name:         m.selectedMedicine?.label || m.name || '',
-            dosage:       m.dosage        || '',
-            duration:     m.duration      || '',
-            instructions: m.instructions  || '',
-          }))
+          .map(m => {
+            const rawID = m.selectedMedicine?.MedicineID || m.medicineID || null
+            // Custom medicines have string IDs like "custom_1234" — send null for those
+            const medicineID = (rawID && !String(rawID).startsWith('custom_') && !String(rawID).startsWith('str_'))
+                ? Number(rawID)
+                : null
+
+            return {
+              medicineID,
+              name:         m.selectedMedicine?.MedicineName
+                  || m.selectedMedicine?.label
+                  || m.name || '',
+              dosage:       m.dosage        || '',
+              duration:     m.duration      || '',
+              instructions: m.instructions  || '',
+            }
+          })
 
       if (!filledMedicines.length) {
         this.saving = false
         return this.errorNoti('Please add at least one medicine.')
       }
 
+      // ── Final payload ─────────────────────────────────────────────────
       const payload = {
-        ...this.form,
-        ...flat,
-        DoctorID:  this.doctor.DoctorID,
+        patientID:      this.form.patientID,
+        DoctorID:       this.doctor.DoctorID,
+        date:           this.form.date,
+        nextVisit:      this.form.nextVisit || null,
+
+        // Arrays — backend iterates these into child tables
+        complaints:     complaintsArr,
+        diagnosis:      diagnosisArr,
+        investigations: investigationsArr,
+        advice:         adviceArr,
+
+        // Strings — backend stores directly on tbl_Prescription
+        history:        historyStr   || null,
+        examFindings:   examFindingsStr || null,
+        referral:       referralStr  || null,
+
+        // Vitals object — backend reads vitals.bp, vitals.pulse, etc.
+        vitals: {
+          bp:     this.form.vitals.bp     || null,
+          pulse:  this.form.vitals.pulse  || null,
+          temp:   this.form.vitals.temp   || null,
+          weight: this.form.vitals.weight || null,
+          spo2:   this.form.vitals.spo2   || null,
+          rbs:    this.form.vitals.rbs    || null,
+        },
+
         medicines: filledMedicines,
       }
 
@@ -889,6 +1147,7 @@ export default {
         if (!id && res && res.id) this.$router.replace({ params: { id: res.id } })
       }
       const err = (e) => { this.saving = false; this.errorNoti(e) }
+
       if (id) this.axiosPost(`prescriptions/${id}`, { _method: 'PUT', ...payload }, cb, err)
       else    this.axiosPost('prescriptions', payload, cb, err)
     },
@@ -908,73 +1167,236 @@ export default {
      GLOBAL print styles — unscoped to hide app sidebar / navbar
      ════════════════════════════════════════════════════════════ -->
 <style>
+/* 1. RESET & PRINT DEFAULTS */
 @media print {
   @page { size: A4 portrait; margin: 12mm 14mm; }
   html, body { background: #fff !important; margin: 0 !important; padding: 0 !important; }
 
-  /* Hide everything */
   body * { visibility: hidden !important; }
-
-  /* Show only the prescription paper */
   #rx-paper, #rx-paper * { visibility: visible !important; }
   #rx-paper {
+    min-height: 100vh; padding: 0;
+    box-shadow: none !important;
     position: absolute !important;
     left: 0 !important; top: 0 !important;
-    width: 100% !important; max-width: 100% !important;
-    margin: 0 !important; box-shadow: none !important; border-radius: 0 !important;
+    width: 100% !important; margin: 0 !important;
+    border-radius: 0 !important;
   }
 
-  /* Hide top bar, action buttons, etc. */
-  .rx-topbar, .no-print { display: none !important; }
-  .row-rm, .btn-mini, .med-foot { display: none !important; }
+  .no-print, .rx-topbar, .row-rm, .btn-mini, .med-foot, .multiselect {
+    display: none !important;
+  }
 
-  /* ── HIDE the multiselect widget itself when printing ── */
-  .multiselect, .multiselect *,
-  .aci ul, .multiselect__content-wrapper { display: none !important; visibility: hidden !important; }
-
-  /* ── SHOW the print-only bulleted list ── */
+  /* Force print cells visible & give them table-cell padding */
   .print-only { display: block !important; visibility: visible !important; }
-  .print-only * { visibility: visible !important; }
-
-  .print-bullets {
-    list-style: none;
-    margin: 4px 0 0 0;
-    padding: 0 0 0 4px;
+  .med-tbl td .print-cell {
+    display: block !important;
+    padding: 6px 8px !important;
+    font-size: 12px !important;
+    color: #000 !important;
+    min-height: 18px;
   }
+  .med-tbl td .print-cell--med { font-weight: 600 !important; }
+  .med-tbl td .print-cell--dos {
+    font-family: 'Courier New', monospace !important;
+    font-weight: 700 !important;
+    color: #0b8a79 !important;
+  }
+
+  /* Hide medicine rows that have no medicine name */
+
+  .med-tbl input, .vb input, .nv-wrap input, .fc {
+    border: none !important;
+    background: transparent !important;
+    color: #000 !important;
+    padding: 2px 4px !important;
+  }
+
+  .print-bullets { list-style: none; margin: 4px 0; padding: 0 0 0 4px; }
   .print-bullets li {
-    position: relative;
-    padding: 1px 0 1px 14px;
-    font-size: 12px;
-    line-height: 1.5;
-    color: #000;
+    position: relative; padding: 1px 0 1px 14px;
+    font-size: 12px; color: #000;
     page-break-inside: avoid;
   }
   .print-bullets li::before {
-    content: '•';
-    position: absolute;
-    left: 2px; top: 0;
-    color: #000;
-    font-weight: 700;
+    content: '•'; position: absolute;
+    left: 2px; top: 0; font-weight: 700;
   }
 
-  /* Medicine table inputs render plainly */
-  .aci input, .med-tbl input, .vb input {
-    border: none !important; background: transparent !important;
-    color: #000 !important; padding: 2px 4px !important;
-  }
   .no-print-select { display: none !important; }
-  .print-value     { display: block !important; }
+  .print-value {
+    display: block !important; visibility: visible !important;
+    border: none !important; padding: 2px 0 !important;
+    font-weight: 600 !important;
+  }
 }
-/* Hide medicine rows where the medicine name cell is empty */
-.med-tbl tbody tr:not(.empty-row-tr) .multiselect__single:empty ~ * { display: none !important; }
 
-/* Simpler approach — print helper class */
-.med-tbl tbody tr.med-row--empty { display: none !important; }
-/* Hide the bulleted list on screen */
+.print-only { display: none; }
+
+
+/* 2. MAIN LAYOUT (FLEXBOX) */
+.rx-paper {
+  display: flex;
+  flex-direction: column;
+  max-width: 1100px;
+  min-height: 297mm; /* Standard A4 height */
+  margin: 18px auto 40px;
+  background: #fff;
+  border-radius: 9px;
+  box-shadow: 0 6px 24px rgba(0,0,0,.13);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* rp-cols acts as the "stretcher" to push the footer down */
+.rp-cols {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 350px 1fr;
+}
+
+/* 3. HEADER & SECTIONS */
+.rp-hdr {
+  background: linear-gradient(135deg, #0b2545 0%, #1a6fb5 100%);
+  color: #fff; padding: 16px 22px;
+  display: grid; grid-template-columns: 66px 1fr auto;
+  gap: 14px; align-items: center;
+  border-bottom: 3px solid #0fa595;
+}
+
+.rp-left { border-right: 1.5px solid #e2e8f0; padding: 15px; background: #fafcfe; }
+.rp-right { padding: 15px; }
+
+/* 4. FOOTER (MODERNIZED BASED ON IMAGE REFERENCE) */
+.rp-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 25px 30px;
+  border-top: 1.5px solid #eee;
+  background: #fff;
+  margin-top: auto; /* Keeps footer at bottom of flex container */
+  break-inside: avoid;
+}
+
+.foot-note {
+  font-size: 11px;
+  color: #666;
+  /*max-width: 30%;*/
+  line-height: 1.4;
+  text-align: left;
+}
+
+.nv-wrap {
+  text-align: center;
+}
+
+.nv-wrap label {
+  display: block;
+  font-size: 10px;
+  font-weight: bold;
+  color: #1a6fb5;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+
+.nv-wrap input {
+  border: none;
+  border-bottom: 2px solid #000;
+  padding: 2px 5px;
+  font-size: 14px;
+  width: 160px;
+  text-align: center;
+  outline: none;
+  background: transparent;
+}
+
+.sig-box {
+  text-align: center;
+}
+
+.sig-line {
+  border-bottom: 2px solid #000;
+  margin-bottom: 8px;
+  width: 100%;
+}
+
+.sig-lbl {
+  font-size: 11px;
+  font-weight: 600;
+  color: #444;
+}
+
+/* 5. TABLE & INPUTS */
+.med-tbl { width: 100%; border-collapse: collapse; }
+.med-tbl thead tr { background: #0b2545; }
+.med-tbl thead th {
+  padding: 8px; text-align: left;
+  font-size: 10px; color: #fff;
+  text-transform: uppercase;
+}
+.med-tbl td { border-bottom: 1px solid #eee; }
+
+.dos input {
+  font-family: 'Courier New', monospace;
+  font-weight: 700;
+  color: #0b8a79;
+}
+
+/* Helper to hide empty rows on screen/print */
+
 .print-only { display: none; }
 </style>
 
 <style scoped>
+.rp-foot {
+  display: flex;
+  justify-content: space-between; /* Pushes items to left, center, and right */
+  align-items: flex-end;         /* Aligns all bottom text on the same baseline */
+  padding: 20px 0;
+  border-top: 1px solid #eee;
+  margin-top: auto;              /* Essential for flex-column papers */
+}
+
+.foot-note {
+  font-size: 11px;
+  color: #666;
+  /*max-width: 30%;*/
+  line-height: 1.4;
+}
+
+.nv-wrap {
+  text-align: center;
+}
+
+.nv-wrap label {
+  display: block;
+  font-size: 10px;
+  font-weight: bold;
+  color: #888;
+  margin-bottom: 5px;
+}
+
+/* Matching the underlined style for the date input in image_fd44e4.png */
+.nv-wrap input {
+  border: none;
+  border-bottom: 2px solid #000;
+  padding: 2px 5px;
+  font-size: 14px;
+  outline: none;
+  background: transparent;
+}
+
+
+.sig-line {
+  border-bottom: 2px solid #000;
+  margin-bottom: 5px;
+}
+
+.sig-lbl {
+  font-size: 11px;
+  color: #777;
+}
 .rx-fullscreen { position: relative; }
 .rx-overlay {
   position: fixed; inset: 0; background: #edf2f7; z-index: 800;
@@ -1184,7 +1606,6 @@ export default {
   padding: 3px 8px; font-size: 13px; text-align: center;
   width: 155px; background: transparent; outline: none; color: #111827;
 }
-.sig-box { text-align: right; }
 .sig-line { width: 140px; height: 50px; border-bottom: 2px solid #374151; margin-left: auto; margin-bottom: 4px; }
 .sig-lbl  { font-size: 10px; color: #9ca3af; text-align: center; width: 140px; margin-left: auto; }
 </style>

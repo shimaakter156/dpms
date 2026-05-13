@@ -14,19 +14,12 @@ class LookupController extends Controller
         'diagnosis'      => ['table' => 'tbl_DiagnosisMaster',    'id' => 'DiagnosisID',     'label' => 'DiagnosisName'],
         'history'        => ['table' => 'tbl_PatientMedicalHistory',    'id' => 'HistoryID',     'label' => 'ConditionName'],
         'investigations' => ['table' => 'tbl_InvestigationSetup', 'id' => 'InvestigationID', 'label' => 'InvestigationName'],
-        'advice'         => ['table' => 'tbl_AdviceMaster',       'id' => 'AdviceID',        'label' => 'AdviceText'],
+        'advice'         => ['table' => 'tbl_AdviceTemplate',       'id' => 'AdviceID',        'label' => 'AdviceText'],
         'dosage'         => ['table' => 'tbl_DosagePattern',      'id' => 'DosageID',        'label' => 'PatternText'],
         'duration'       => ['table' => 'tbl_DurationPattern',    'id' => 'DurationID',      'label' => 'DurationText'],
         'instruction'    => ['table' => 'tbl_InstructionPattern', 'id' => 'InstructionID',   'label' => 'InstructionText'],
         'medicine'       => ['table' => 'tbl_Medicine',             'id' => 'MedicineID',     'label' => 'BrandName']
     ];
-
-    private function getTable($type)
-    {
-        return $this->tables[$type] ?? null;
-    }
-
-
     public function all()
     {
         $data = [];
@@ -35,12 +28,21 @@ class LookupController extends Controller
 
             $data[$key] = DB::table($config['table'])
                 ->where('IsActive', 1)
-                ->orderBy($config['label'])
-                ->pluck($config['label']);
+//                ->orderBy($config['label'])
+                ->Orderby($config['label'])
+                ->get();
+//                ->pluck($config['label']);
         }
 
         return response()->json($data);
     }
+    private function getTable($type)
+    {
+        return $this->tables[$type] ?? null;
+    }
+
+
+
 
     public function search(Request $request, $type)
     {
