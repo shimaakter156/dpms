@@ -14,6 +14,8 @@ class LookupController extends Controller
         'diagnosis'      => ['table' => 'tbl_DiagnosisMaster',    'id' => 'DiagnosisID',     'label' => 'DiagnosisName'],
         'history'        => ['table' => 'tbl_PatientMedicalHistory',    'id' => 'HistoryID',     'label' => 'ConditionName'],
         'investigations' => ['table' => 'tbl_InvestigationSetup', 'id' => 'InvestigationID', 'label' => 'InvestigationName'],
+        'examFindings' => ['table' => 'tbl_ExaminationSetup', 'id' => 'ExaminationSetupID', 'label' => 'FindingName'],
+        'referral' => ['table' => 'tbl_ReferralSetup', 'id' => 'ReferralSetupID', 'label' => 'ReferralText'],
         'advice'         => ['table' => 'tbl_AdviceTemplate',       'id' => 'AdviceID',        'label' => 'AdviceText'],
         'dosage'         => ['table' => 'tbl_DosagePattern',      'id' => 'DosageID',        'label' => 'PatternText'],
         'duration'       => ['table' => 'tbl_DurationPattern',    'id' => 'DurationID',      'label' => 'DurationText'],
@@ -106,7 +108,7 @@ class LookupController extends Controller
         $id = DB::table($config['table'])->insertGetId([
             $config['label'] => $label,
             'IsActive' => 1,
-            'CreatedAt' => now()
+            'CreatedDate' => now()
         ]);
 
         return response()->json([

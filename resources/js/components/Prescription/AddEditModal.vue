@@ -1,137 +1,155 @@
 <template>
   <div>
-    <div class="modal fade" id="add-edit-dept" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="open-add-medicine-modal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
-            <div class="modal-title modal-title-font" id="exampleModalLabel">{{ title }} <span v-if="UserID">With UserID -{{UserID}}</span></div>
+            <div class="modal-title modal-title-font">
+              Add New Medicine
+            </div>
           </div>
+
           <ValidationObserver v-slot="{ handleSubmit }">
-            <form class="form-horizontal" id="form" @submit.prevent="handleSubmit(onSubmit)" autocomplete="off">
-              <!-- Hidden username field for accessibility -->
-              <input type="text" name="username" autocomplete="username" style="display:none">
+            <form @submit.prevent="handleSubmit(onSubmit)" autocomplete="off">
               <div class="modal-body">
                 <div class="row">
                   <div class="col-12 col-md-6">
-                    <ValidationProvider name="Staff ID" mode="eager" rules="required" v-slot="{ errors }">
+                    <ValidationProvider name="Brand Name" rules="required" v-slot="{ errors }">
                       <div class="form-group">
-                        <label for="staffId">Staff ID <span class="error">*</span></label>
-                        <input type="text" class="form-control" :class="{'error-border': errors[0]}"
-                               v-model="staffId" placeholder="Staff ID" >
-                        <span class="error-message"> {{ errors[0] }}</span>
-                      </div>
-                    </ValidationProvider>
-                  </div>
-                  <div class="col-12 col-md-6">
-                    <ValidationProvider name="Staff Name" mode="eager" rules="required" v-slot="{ errors }">
-                      <div class="form-group">
-                        <label for="staffName">Staff Name <span class="error">*</span></label>
-                        <input type="text" class="form-control" :class="{'error-border': errors[0]}" id="staffName"
-                               v-model="staffName" name="staff-name" placeholder="Staff Name"
-                               >
-                        <span class="error-message"> {{ errors[0] }}</span>
-                      </div>
-                    </ValidationProvider>
-                  </div>
-                  <div class="col-12 col-md-6">
-                    <ValidationProvider name="email" mode="eager" rules="required|email" v-slot="{ errors }">
-                      <div class="form-group">
-                        <label for="email">Email <span class="error">*</span></label>
-                        <input type="text" class="form-control" :class="{'error-border': errors[0]}"
-                               id="email" v-model="email" placeholder="Email" autocomplete="off">
-                        <span class="error-message"> {{ errors[0] }}</span>
-                      </div>
-                    </ValidationProvider>
-                  </div>
-                  <div class="col-12 col-md-6">
-                    <ValidationProvider name="mobile" mode="eager" rules="required|min:11|max:11" v-slot="{ errors }">
-                      <div class="form-group">
-                        <label for="mobile">Mobile <span class="error">*</span></label>
-                        <input type="text" class="form-control" :class="{'error-border': errors[0]}"
-                               id="mobile" v-model="mobile" placeholder="Mobile" autocomplete="off">
-                        <span class="error-message"> {{ errors[0] }}</span>
-                      </div>
-                    </ValidationProvider>
-                  </div>
-                  <div class="col-12 col-md-6" v-if="actionType === 'add'">
-                    <ValidationProvider name="User Type" mode="eager" rules="required" v-slot="{ errors }">
-                      <div class="form-group">
-                        <label for="userType">User Type <span class="error">*</span></label>
-                        <multiselect v-model="userType" :options="userTypes" :multiple="false" :close-on-select="true"
-                                     :clear-on-select="false" :preserve-search="true" placeholder="Select User Type"
-                                     label="UserTypeName" track-by="UserTypeID" >
-                        </multiselect>
-                        <span class="error-message"> {{ errors[0] }}</span>
-                      </div>
-                    </ValidationProvider>
-                  </div>
-                  <div class="col-12 col-md-6">
-                    <ValidationProvider name="Location" mode="eager" rules="" v-slot="{ errors }">
-                      <div class="form-group">
-                        <label for="location">Location <span class="error">*</span></label>
-                        <multiselect v-model="location" :options="locationList" :multiple="true" :close-on-select="true"
-                                     :clear-on-select="false" :preserve-search="true" placeholder="Select Location"
-                                     label="LocationName" track-by="LocationCode">
-                        </multiselect>
-                        <span class="error-message"> {{ errors[0] }}</span>
+                        <label>Brand Name <span class="error">*</span></label>
+                        <input class="form-control" :class="{'error-border': errors[0]}" v-model="form.BrandName">
+                        <span class="error-message">{{ errors[0] }}</span>
                       </div>
                     </ValidationProvider>
                   </div>
 
-                  <div class="col-12 col-md-6" v-if="actionType === 'add'">
-                    <ValidationProvider name="password" mode="eager" rules="required|min:6" v-slot="{ errors }">
-                      <div class="form-group">
-                        <label for="password">Password <span class="error">*</span></label>
-                        <input type="password" class="form-control" :class="{'error-border': errors[0]}" id="password"
-                               v-model="password" name="password" placeholder="Password" autocomplete="new-password">
-                        <span class="error-message"> {{ errors[0] }}</span>
-                      </div>
-                    </ValidationProvider>
-                  </div>
-                  <div class="col-12 col-md-6" v-if="actionType === 'add'">
-                    <ValidationProvider name="confirm" mode="eager" rules="required|min:6|confirmed:password" v-slot="{ errors }">
-                      <div class="form-group">
-                        <label for="confirm">Confirm Password <span class="error">*</span></label>
-                        <input type="password" class="form-control" :class="{'error-border': errors[0]}" id="confirm"
-                               v-model="confirm" name="confirm" placeholder="Confirm Password" autocomplete="new-password">
-                        <span class="error-message"> {{ errors[0] }}</span>
-                      </div>
-                    </ValidationProvider>
-                  </div>
                   <div class="col-12 col-md-6">
-                    <ValidationProvider name="Status" mode="eager" rules="required" v-slot="{ errors }">
+                    <ValidationProvider name="Generic" rules="required" v-slot="{ errors }">
                       <div class="form-group">
-                        <label for="status">Status <span class="error">*</span></label>
-                        <select class="form-control" id="status" v-model="status">
-                          <option value="Y">Active</option>
-                          <option value="N">Inactive</option>
-                        </select>
-                        <span class="error-message"> {{ errors[0] }}</span>
+                        <label>Generic <span class="error">*</span></label>
+                        <multiselect
+                            v-model="form.generic"
+                            :options="generics"
+                            :multiple="false"
+                            :taggable="true"
+                            :show-labels="false"
+                            label="GenericName"
+                            track-by="GenericID"
+                            placeholder="Select or type generic"
+                            @tag="addGenericTag"
+                        />
+                        <span class="error-message">{{ errors[0] }}</span>
                       </div>
                     </ValidationProvider>
                   </div>
-                  <div class="col-12">
-                    <p class="font-weight-bold">Submenu Permission</p>
-                  </div>
-                  <div class="col-12 col-md-6" v-for="(submenu, index) in allSubMenu" :key="index">
-                    <div class="form-group">
-                      <div class="form-check">
-                        <p><u>{{ submenu.MenuName }}</u></p>
-                        <div v-for="(sub, index2) in submenu.all_sub_menus" :key="index2">
-                          <input class="form-check-input" type="checkbox" :value="sub.SubMenuID"
-                                 v-model="allSubMenuId" :id="'allSubMenu' + index + '-' + index2">
-                          <label class="form-check-label" :for="'allSubMenu' + index + '-' + index2">
-                            {{ sub.SubMenuName }}
-                          </label>
-                        </div>
+
+                  <div class="col-12 col-md-6">
+                    <ValidationProvider name="Dosage Form" rules="required" v-slot="{ errors }">
+                      <div class="form-group">
+                        <label>Dosage Form <span class="error">*</span></label>
+                        <multiselect
+                            v-model="form.dosageForm"
+                            :options="dosageForms"
+                            :multiple="false"
+                            :show-labels="false"
+                            label="FormName"
+                            track-by="DosageFormID"
+                            placeholder="Tablet, Syrup, Injection..."
+                        />
+                        <span class="error-message">{{ errors[0] }}</span>
                       </div>
+                    </ValidationProvider>
+                  </div>
+
+                  <div class="col-12 col-md-6">
+                    <ValidationProvider name="Strength" rules="required" v-slot="{ errors }">
+                      <div class="form-group">
+                        <label>Strength <span class="error">*</span></label>
+                        <multiselect
+                            v-model="form.Strength"
+                            :options="strengths"
+                            :multiple="false"
+                            :show-labels="false"
+                            label="StrengthLabel"
+                            track-by="StrengthID"
+                            placeholder="0.5mg..."
+                        />
+<!--                        <input class="form-control" :class="{'error-border': errors[0]}" v-model="form.Strength" placeholder="500mg">-->
+                        <span class="error-message">{{ errors[0] }}</span>
+                      </div>
+                    </ValidationProvider>
+                  </div>
+
+                  <div class="col-12 col-md-6">
+                    <div class="form-group">
+                      <label>Category</label>
+                      <multiselect
+                          v-model="form.category"
+                          :options="categories"
+                          :multiple="false"
+                          :show-labels="false"
+                          label="CategoryName"
+                          track-by="MedicineCategoryID"
+                          placeholder="Select category"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="col-12 col-md-6">
+                    <div class="form-group">
+                      <label>Manufacturer</label>
+                      <multiselect
+                          v-model="form.manufacturer"
+                          :options="manufacturers"
+                          :multiple="false"
+                          :show-labels="false"
+                          label="ManufacturerName"
+                          track-by="ManufacturerID"
+                          placeholder="Select manufacturer"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="col-12 col-md-4">
+                    <div class="form-group">
+                      <label>Unit</label>
+                      <multiselect
+                          v-model="form.Unit"
+                          :options="units"
+                          :multiple="false"
+                          :taggable="true"
+                          :show-labels="false"
+                          label="UnitName"
+                          track-by="UnitID"
+                          placeholder="Select or type Unit"
+                      />
+
+<!--                      <input class="form-control" v-model="form.Unit" placeholder="pcs/ml">-->
+                    </div>
+                  </div>
+
+                  <div class="col-12 col-md-4">
+                    <div class="form-group">
+                      <label>Unit Price</label>
+                      <input type="number" step="0.01" class="form-control" v-model="form.UnitPrice">
+                    </div>
+                  </div>
+
+                  <div class="col-12 col-md-4">
+                    <div class="form-group">
+                      <label>Owner</label>
+                      <select class="form-control" v-model="form.ownerType">
+                        <option value="doctor">Doctor Medicine</option>
+                        <option value="hospital">Hospital Medicine</option>
+                      </select>
                     </div>
                   </div>
                 </div>
               </div>
+
               <div class="modal-footer">
-                <submit-form v-if="buttonShow" :name="buttonText"/>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <submit-form :name="buttonText"/>
+                <button type="button" class="btn btn-secondary" @click="closeModal">Close</button>
               </div>
             </form>
           </ValidationObserver>
@@ -142,135 +160,210 @@
 </template>
 
 <script>
-import {bus} from "../../app";
-import {Common} from "../../mixins/common";
+import { bus } from '../../app'
+import { Common } from '../../mixins/common'
+import Multiselect from 'vue-multiselect'
 
 export default {
+  name: 'AddMedicineModal',
   mixins: [Common],
+  components: { Multiselect },
+
   data() {
     return {
-      title: '',
-      UserID: '',
-      staffId: '',
-      staffName: '',
-      buttonText: '',
-      mobile: '',
-      email: '',
-      status: '1',
-      password: '',
-      confirm: '',
-      userType: '',
-      location: [],
-      actionType: '',
-      buttonShow: false,
-      userTypes: [],
-      locationList: [],
-      allSubMenu: [],
-      allSubMenuId: [],
+      modalInstance: null,
+      rowIndex: null,
+      buttonText: 'Save Medicine',
+      generics: [],
+      dosageForms: [],
+      categories: [],
+      manufacturers: [],
+      strengths: [],
+      units: [],
+      doctor: {},
+      hospitalID: null,
+
+      form: {
+        BrandName: '',
+        generic: null,
+        dosageForm: null,
+        category: null,
+        manufacturer: null,
+        Strength: '',
+        Unit: '',
+        UnitPrice: '',
+        ownerType: 'doctor',
+      },
     }
   },
   mounted() {
-    $('#add-edit-dept').on('hidden.bs.modal', () => {
-      this.$emit('changeStatus');
-    });
-    this.getData();
-    this.getLocation();
-    bus.$on('add-edit-user', (row) => {
-      this.resetForm();
-      if (row) {
-        this.axiosGet('user/get-user-info/' + row.UserID, (response) => {
-          const user = response.data;
-          this.title = 'Update User';
-          this.buttonText = 'Update';
-          this.staffName = user.Name;
-          this.UserID = user.UserID;
-          this.staffId = user.StaffID;
-          this.mobile = user.PhoneNo;
-          this.email = user.Email;
-          this.status = user.Status;
-          this.userType = {
-            UserTypeName: user.user_type.UserTypeName,
-            UserTypeID: user.user_type.UserTypeID
-          };
-          this.location = user.user_location.map(item=>({
-            LocationCode : item.LocationCode,
-            LocationName : item.location.LocationName
-          }))
-          this.buttonShow = true;
-          this.actionType = 'edit';
-        }, (error) => {
-          console.log('Error fetching user info:', error);
-        });
-      } else {
-        this.title = 'Add User';
-        this.buttonText = 'Add';
-        this.buttonShow = true;
-        this.actionType = 'add';
+    this.loadModalData()
 
+    bus.$on('open-add-medicine-modal', payload => {
+      this.resetForm()
+
+      this.rowIndex = payload.index
+      this.doctor = payload.doctor || {}
+      this.hospitalID = payload.hospitalID || null
+      this.form.BrandName = payload.name || ''
+
+      const modalEl = document.getElementById('open-add-medicine-modal')
+      this.modalInstance = bootstrap.Modal.getInstance
+          ? bootstrap.Modal.getInstance(modalEl)
+          : null
+
+      if (!this.modalInstance) {
+        this.modalInstance = new bootstrap.Modal(modalEl, {
+          backdrop: true,
+          keyboard: true,
+        })
       }
-      $("#add-edit-dept").modal("toggle");
-    });
+
+      this.modalInstance.show()
+    })
   },
+
   destroyed() {
-    bus.$off('add-edit-user');
+    bus.$off('open-add-medicine-modal')
+    this.closeModal()
   },
+
   methods: {
     resetForm() {
-      this.UserID = '';
-      this.staffId = '';
-      this.staffName = '';
-      this.mobile = '';
-      this.email = '';
-      this.status = '1';
-      this.password = '';
-      this.confirm = '';
-      this.userType = '';
-      this.location = [];
-      this.allSubMenu = [];
-      this.allSubMenuId = [];
-      this.buttonShow = false;
+      this.rowIndex = null
+      this.form = {
+        BrandName: '',
+        generic: null,
+        dosageForm: null,
+        category: null,
+        manufacturer: null,
+        Strength: null,
+        Unit: null,
+        UnitPrice: '',
+        ownerType: 'doctor',
+      }
     },
-    getData() {
-      this.axiosGet('user/modal', (response) => {
-        this.userTypes = response.userTypes || [];
-        this.allSubMenu = response.allSubMenus || [];
-      }, (error) => {
-        console.log('Error fetching modal data:', error);
-      });
+    closeModal() {
+      const modalEl = document.getElementById('add-medicine-modal')
+
+      let modal = null
+      if (bootstrap.Modal.getInstance) {
+        modal = bootstrap.Modal.getInstance(modalEl)
+      }
+
+      if (!modal && this.modalInstance) {
+        modal = this.modalInstance
+      }
+
+      if (modal) {
+        modal.hide()
+      }
+
+      setTimeout(() => {
+        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove())
+        document.body.classList.remove('modal-open')
+        document.body.style.removeProperty('overflow')
+        document.body.style.removeProperty('padding-right')
+      }, 300)
     },
-    getLocation() {
-      this.axiosGet('get-location-list', (response) => {
-        this.locationList = response.data || response || [];
-      }, (error) => {
-        console.log('Error fetching locations:', error);
-      });
+    loadModalData() {
+      this.axiosGet('medicine/modal', response => {
+        const data = response.data || response || {}
+
+        this.units = data.unit || []
+        this.strengths = data.strength || []
+        this.dosageForms = data.dosageForms || []
+        this.categories = data.categories || []
+        this.manufacturers = data.manufacturers || []
+        this.generics = data.generics || []
+      }, error => {
+        this.errorNoti(error)
+      })
     },
+
+    addGenericTag(tag) {
+      const name = String(tag || '').trim()
+      if (!name) return
+
+      const generic = {
+        GenericID: `tmp_generic_${Date.now()}`,
+        GenericName: name,
+      }
+
+      this.generics.push(generic)
+      this.form.generic = generic
+    },
+
     onSubmit() {
-      this.$store.commit('submitButtonLoadingStatus', true);
-      const url = this.actionType === 'add' ? 'user/add' : 'user/update';
-      this.axiosPost(url, {
-        userID: this.UserID,
-        staffId: this.staffId,
-        staffName: this.staffName,
-        email: this.email,
-        mobile: this.mobile,
-        status: this.status,
-        userType: this.userType,
-        location: this.location,
-        password: this.password,
-        selectedSubMenu: this.allSubMenuId,
-      }, (response) => {
-        this.successNoti(response.message);
-        $("#add-edit-dept").modal("toggle");
-        bus.$emit('refresh-datatable');
-        this.$store.commit('submitButtonLoadingStatus', false);
-      }, (error) => {
-        this.errorNoti(error);
-        this.$store.commit('submitButtonLoadingStatus', false);
-      });
+      this.$store.commit('submitButtonLoadingStatus', true)
+
+      const payload = {
+        BrandName: this.form.BrandName,
+        GenericName: this.form.generic ? this.form.generic.GenericName : '',
+        GenericID: this.form.generic && !String(this.form.generic.GenericID).startsWith('tmp_')
+            ? this.form.generic.GenericID
+            : null,
+
+        DosageFormID: this.form.dosageForm ? this.form.dosageForm.DosageFormID : null,
+        MedicineCategoryID: this.form.category ? this.form.category.MedicineCategoryID : null,
+        ManufacturerID: this.form.manufacturer ? this.form.manufacturer.ManufacturerID : null,
+
+        Strength: this.form.Strength ? this.form.Strength.StrengthID : null,
+        Unit: this.form.Unit?this.form.UnitID: null,
+        UnitPrice: this.form.UnitPrice || null,
+
+        IsSystemMedicine: 0,
+        DoctorID: this.form.ownerType === 'doctor' ? this.doctor.DoctorID : null,
+        HospitalID: this.form.ownerType === 'hospital' ? this.hospitalID : null,
+        IsActive: 1,
+        IsDeleted: 0,
+      }
+
+      this.axiosPost('medicine/add-from-prescription', payload, response => {
+        const med = response.data || response.medicine || response
+
+        const createdMedicine = {
+          ...med,
+          MedicineID: med.MedicineID || med.id,
+          MedicineName: `${med.BrandName || payload.BrandName} (${med.Strength || payload.Strength})`,
+          BrandName: med.BrandName || payload.BrandName,
+          GenericName: med.GenericName || payload.GenericName,
+          Strength: med.Strength || payload.Strength,
+        }
+
+        this.$emit('medicine-created', {
+          index: this.rowIndex,
+          medicine: createdMedicine,
+        })
+
+        this.successNoti(response.message || 'Medicine added.')
+        this.closeModal()
+
+        // $('#add-medicine-modal').modal('toggle')
+
+        // ✅ Replace $('#add-medicine-modal').modal('toggle') with:
+        // const modalEl = document.getElementById('add-medicine-modal')
+        // const modal = bootstrap.Modal.getInstance(modalEl)
+        // if (modal) modal.hide()
+        this.$store.commit('submitButtonLoadingStatus', false)
+      }, error => {
+        this.errorNoti(error)
+        this.$store.commit('submitButtonLoadingStatus', false)
+      })
     },
   }
 }
+
 </script>
 
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
+
+<style>
+.modal {
+  z-index: 2000 !important;
+}
+
+.modal-backdrop {
+  z-index: 1990 !important;
+}
+</style>

@@ -25,8 +25,7 @@
                   <router-link
                       v-if="child.url !== parent.url"
                       :to="baseurl()+ child.url"
-                      class="nav-link waves-effect"
-                  >
+                      class="nav-link waves-effect">
 
                     <span class="sub-menu"></span>{{ child.name }}
                   </router-link>

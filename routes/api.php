@@ -72,7 +72,11 @@ Route::group(['middleware' => ['jwt:api']], function () {
     Route::get ('prescriptions/{id}',                        [PrescriptionController::class, 'show']);
     Route::post('prescriptions',                             [PrescriptionController::class, 'save']);
     Route::post('prescriptions/{id}',                        [PrescriptionController::class, 'save']);
+    Route::post('suggestions-by-complaints', [PrescriptionController::class, 'suggestionsByComplaints']);
 
+
+    Route::get('medicine/modal', [MedicineController::class, 'modal']);
+    Route::post('medicine/add-from-prescription', [MedicineController::class, 'addFromPrescription']);
 
 });
 
